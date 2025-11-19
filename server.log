@@ -1,5 +1,0 @@
-2025-11-19 02:12:03,670 INFO: 백엔드 서버 정상적으로 작동 중 [in /Users/s7unn0r/코딩/server4.py:59]
-2025-11-19 02:18:24,860 ERROR: 모델 서버 연결 실패: HTTPConnectionPool(host='192.168.192.111', port=8000): Max retries exceeded with url: /predict (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x10533c130>, 'Connection to 192.168.192.111 timed out. (connect timeout=5)')) [in /Users/s7unn0r/코딩/server4.py:109]
-2025-11-19 02:34:05,684 ERROR: 모델 서버 연결 실패: HTTPConnectionPool(host='192.168.192.111', port=8000): Max retries exceeded with url: /predict (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x10743b0a0>, 'Connection to 192.168.192.111 timed out. (connect timeout=5)')) [in /Users/s7unn0r/코딩/server_test.py:109]
-2025-11-19 02:42:57,966 INFO: 백엔드 서버 정상 작동 중 [in /Users/s7unn0r/코딩/server_test.py:64]
-2025-11-19 02:43:05,051 INFO: 파일 분석 성공(테스트 모드): skate.jpg [in /Users/s7unn0r/코딩/server_test.py:102]
