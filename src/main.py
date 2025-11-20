@@ -6,6 +6,7 @@ from PIL import Image, UnidentifiedImageError
 import io
 import os
 import logging
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -31,7 +32,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 ## 내일 물어보고 정보 추가
-MODEL_SERVER_IP = "192.168.192.111"
+MODEL_SERVER_IP = "127.0.0.1" # 수정 필요
 MODEL_SERVER_PORT = "8000" # 일단 이 포트로 픽스해두고 문제 생기면 나중에 바꾸는 걸로
 MODEL_SERVER_ENDPOINT = "predict"
 MODEL_SERVER_URL = f"http://{MODEL_SERVER_IP}:{MODEL_SERVER_PORT}/{MODEL_SERVER_ENDPOINT}"
@@ -78,6 +79,21 @@ def analyze_content():
     
     # 전처리 및 JSON으로 모델 서버에 요청
     try:
+
+        app.logger.info(f"가짜 분석 시작: {file.filename}")
+        time.sleep(1) # 실제 기다리는 것처럼(테스트용)
+
+        # 무조건 AI라고 우기기(테스트용)
+        final_result = {
+            "is_ai_generated": True,
+            "confidence": 0.985,
+            "message": f"{file.filename} 분석 완료 (가짜임)"
+        }
+        
+        app.logger.info(f"가짜 결과 전송 완료: {final_result}")
+        return jsonify(final_result), 200
+    
+        """    
         # 원본 파일 -> 256x256 Numpy 배열로 변환
         processed_image = preprocess_image(file)
         if processed_image is None:
@@ -103,6 +119,7 @@ def analyze_content():
         }
         app.logger.info(f"파일 분석 성공: {file.filename}, AI 확률: {confidence:.2f}")
         return jsonify(final_result), 200
+        """
 
     except requests.exceptions.ConnectionError as e:
         # 로그 기록 - print 대신 logger.error 사용
