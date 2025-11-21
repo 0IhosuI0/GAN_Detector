@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 from flask import Flask, jsonify, request, current_app
+=======
+from flask import Flask, jsonify, request, current_app, render_template
+## render_template 추가
+>>>>>>> 1379484de3382f699295a1b672af4e604c0d8e60
 from flask_cors import CORS
 import requests
 import numpy as np
@@ -57,8 +62,18 @@ def preprocess_image(file_storage):
 ## Flask 라우터
 @app.route('/')
 def home():
+<<<<<<< HEAD
     app.logger.info("백엔드 서버 정상적으로 작동 중")
     return "백엔드 서버 작동 중"
+=======
+    return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+# index.html이랑 about.html 추가
+>>>>>>> 1379484de3382f699295a1b672af4e604c0d8e60
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze_content():
@@ -130,4 +145,8 @@ def analyze_content():
         return jsonify({"error": "이미지 분석 중 서버 오류가 발생했습니다."}), 500
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     app.run(debug=True, host='0.0.0.0', port=5001) # 코드 수정 완료하고 ㄱ
+=======
+    app.run(debug=True, host='0.0.0.0', port=5050) #포트 5050으로 임의 수정했습니다!
+>>>>>>> 1379484de3382f699295a1b672af4e604c0d8e60
