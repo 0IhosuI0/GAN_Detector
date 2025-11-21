@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-from flask import Flask, jsonify, request, current_app
-=======
 from flask import Flask, jsonify, request, current_app, render_template
 ## render_template 추가
->>>>>>> 1379484de3382f699295a1b672af4e604c0d8e60
 from flask_cors import CORS
 import requests
 import numpy as np
@@ -62,10 +58,6 @@ def preprocess_image(file_storage):
 ## Flask 라우터
 @app.route('/')
 def home():
-<<<<<<< HEAD
-    app.logger.info("백엔드 서버 정상적으로 작동 중")
-    return "백엔드 서버 작동 중"
-=======
     return render_template('index.html')
 
 @app.route('/about')
@@ -73,7 +65,6 @@ def about():
     return render_template('about.html')
 
 # index.html이랑 about.html 추가
->>>>>>> 1379484de3382f699295a1b672af4e604c0d8e60
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze_content():
@@ -121,32 +112,29 @@ def analyze_content():
         # 모델 서버에 파일이 아닌 'JSON'을 전송
         response_from_model = requests.post(MODEL_SERVER_URL, json = json_to_send, timeout = 5)
         
-        # 모델 서버의 응답 받음
-        model_output_json = response_from_model.json() 
-        
-        confidence = float(model_output_json['prediction'][0][0])
-        is_ai = bool(confidence > 0.5)
+        # 모델 서버의 응답 받음 (모델 팀 포맷: filename, prediction, confidence)
+        model_output = response_from_model.json() 
+
+        pred_value = model_out.get('prediction') # 결과 라벨 (0 또는 1) / 답 받고 수정
+        conf_value = model_out.get('confidence') # 확률
+      
+        is_ai = True if pred_value == 1 else False # 모델이 1 주면 AI라고 판단 / 여기도 답 받고 수정
         
         final_result = {
             "is_ai_generated": is_ai,
-            "confidence": confidence,
+            "confidence": conf_value,
             "message": f"{file.filename} 분석 완료"
         }
-        app.logger.info(f"파일 분석 성공: {file.filename}, AI 확률: {confidence:.2f}")
+        app.logger.info(f"파일 분석 성공: {file.filename}, AI 확률: {conf_value}")
         return jsonify(final_result), 200
         """
 
     except requests.exceptions.ConnectionError as e:
-        # 로그 기록 - print 대신 logger.error 사용
         current_app.logger.error(f"모델 서버 연결 실패: {e}")
-        return jsonify({"error": "모델 서버에 연결할 수 없습니다. (서버 꺼져 있음)"}), 503 # Service Unavailable
+        return jsonify({"error": "모델 서버에 연결할 수 없습니다. (서버 꺼져 있음)"}), 503
     except Exception as e:
         current_app.logger.error(f"분석 중 오류 발생: {e}")
         return jsonify({"error": "이미지 분석 중 서버 오류가 발생했습니다."}), 500
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    app.run(debug=True, host='0.0.0.0', port=5001) # 코드 수정 완료하고 ㄱ
-=======
     app.run(debug=True, host='0.0.0.0', port=5050) #포트 5050으로 임의 수정했습니다!
->>>>>>> 1379484de3382f699295a1b672af4e604c0d8e60
