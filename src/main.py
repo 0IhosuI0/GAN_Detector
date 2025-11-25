@@ -2,12 +2,11 @@ from flask import Flask, jsonify, request, current_app, render_template
 ## render_template 추가
 from flask_cors import CORS
 import requests
-import numpy as np
-from PIL import Image, UnidentifiedImageError
 import io
 import os
 import logging
 import time
+import base64
 
 app = Flask(__name__)
 CORS(app)
@@ -37,23 +36,6 @@ MODEL_SERVER_IP = "127.0.0.1" # 수정 필요
 MODEL_SERVER_PORT = "8000" # 일단 이 포트로 픽스해두고 문제 생기면 나중에 바꾸는 걸로
 MODEL_SERVER_ENDPOINT = "predict"
 MODEL_SERVER_URL = f"http://{MODEL_SERVER_IP}:{MODEL_SERVER_PORT}/{MODEL_SERVER_ENDPOINT}"
-
-## 전처리
-def preprocess_image(file_storage):
-    try:
-        image_data = file_storage.read()
-        image = Image.open(io.BytesIO(image_data))
-        image = image.resize((256, 256))
-        if image.mode == 'RGBA':
-            image = image.convert('RGB')
-        image_array = np.array(image).astype('float32') / 255.0
-        return np.expand_dims(image_array, axis=0)
-    except UnidentifiedImageError:
-        current_app.logger.error("이미지 파일이 아님 또는 손상됨")
-        return None
-    except Exception as e:
-        current_app.logger.error(f"전처리 중 오류: {e}") # print 대신 logger 사용
-        return None
 
 ## Flask 라우터
 @app.route('/')
@@ -85,7 +67,6 @@ def analyze_content():
     
     # 전처리 및 JSON으로 모델 서버에 요청
     try:
-
         app.logger.info(f"가짜 분석 시작: {file.filename}")
         time.sleep(1) # 실제 기다리는 것처럼(테스트용)
 
@@ -100,25 +81,29 @@ def analyze_content():
         return jsonify(final_result), 200
     
         """    
-        # 원본 파일 -> 256x256 Numpy 배열로 변환
-        processed_image = preprocess_image(file)
-        if processed_image is None:
-             return jsonify({"error": "이미지 파일 형식이 아니거나 손상되었습니다."}), 400
+        # 전처리 없이 원본 그대로
+        img_bytes = file.read()
 
-        # Numpy 배열 -> JSON으로 전송 가능한 리스트로 변환
-        image_list = processed_image.tolist()
-        json_to_send = {'instances': image_list}
+        # Base64 문자열로 변환(인코딩)
+        base64_string = base64.b64encode(img_bytes).decode('utf-8') 
 
-        # 모델 서버에 파일이 아닌 'JSON'을 전송
-        response_from_model = requests.post(MODEL_SERVER_URL, json = json_to_send, timeout = 5)
+        # 키 이름 물어보고 바꿔주기
+        json_to_send = {
+            'filename': file.filename,
+            'image_base64': base64_string
+        }
+
+        # 모델 서버 전송
+        response_from_model = requests.post(MODEL_SERVER_URL, json = json_to_send, timeout = 10)
         
-        # 모델 서버의 응답 받음 (모델 팀 포맷: filename, prediction, confidence)
+        # 응답 처리 (모델 팀 포맷: filename, prediction, confidence)
         model_output = response_from_model.json() 
 
-        pred_value = model_out.get('prediction') # 결과 라벨 (0 또는 1) / 답 받고 수정
-        conf_value = model_out.get('confidence') # 확률
-      
-        is_ai = True if pred_value == 1 else False # 모델이 1 주면 AI라고 판단 / 여기도 답 받고 수정
+        pred_value = model_output.get('prediction') # 결과 라벨 (0 또는 1) / 답 받고 수정
+        conf_value = model_output.get('confidence') # 확률
+
+        # 1 = AI, 0 = Real
+        is_ai = True if pred_value == 1 else False
         
         final_result = {
             "is_ai_generated": is_ai,
@@ -137,4 +122,4 @@ def analyze_content():
         return jsonify({"error": "이미지 분석 중 서버 오류가 발생했습니다."}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5050) #포트 5050으로 임의 수정했습니다!
+    app.run(debug=True, host='0.0.0.0', port=5050) #포트 5050으로 임의 수정했습니다!(지선)
