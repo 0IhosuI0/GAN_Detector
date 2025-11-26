@@ -31,9 +31,8 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-## 내일 물어보고 정보 추가
-MODEL_SERVER_IP = "127.0.0.1" # 수정 필요
-MODEL_SERVER_PORT = "8000" # 일단 이 포트로 픽스해두고 문제 생기면 나중에 바꾸는 걸로
+MODEL_SERVER_IP = "192.168.192.21" # 수정함
+MODEL_SERVER_PORT = "35840" # 포트 수정함
 MODEL_SERVER_ENDPOINT = "predict"
 MODEL_SERVER_URL = f"http://{MODEL_SERVER_IP}:{MODEL_SERVER_PORT}/{MODEL_SERVER_ENDPOINT}"
 
@@ -67,6 +66,7 @@ def analyze_content():
     
     # 전처리 및 JSON으로 모델 서버에 요청
     try:
+        """
         app.logger.info(f"가짜 분석 시작: {file.filename}")
         time.sleep(1) # 실제 기다리는 것처럼(테스트용)
 
@@ -102,6 +102,11 @@ def analyze_content():
         pred_value = model_output.get('prediction') # 결과 라벨 (0 또는 1) / 답 받고 수정
         conf_value = model_output.get('confidence') # 확률
 
+        # 방어 코드 추가 - 연결 오류 떴을 때
+        if pred_value is None or conf_value is None:
+            app.logger.error(f"모델 응답 오류(값 없음): {model_output}")
+            return jsonify({"error": "AI 모델이 분석에 실패했습니다. (결과값 None)"}), 500
+
         # 1 = AI, 0 = Real
         is_ai = True if pred_value == 1 else False
         
@@ -112,7 +117,6 @@ def analyze_content():
         }
         app.logger.info(f"파일 분석 성공: {file.filename}, AI 확률: {conf_value}")
         return jsonify(final_result), 200
-        """
 
     except requests.exceptions.ConnectionError as e:
         current_app.logger.error(f"모델 서버 연결 실패: {e}")
