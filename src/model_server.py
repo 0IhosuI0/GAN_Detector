@@ -15,7 +15,7 @@ class ImageRequest(BaseModel):
 
 print("Loading AI Model...")
 
-MODEL_PATH = "best_model_EPOCH100.h5"
+MODEL_PATH = "classifier.keras"
 
 try:
     model = tf.keras.models.load_model(MODEL_PATH)

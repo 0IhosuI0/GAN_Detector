@@ -1,13 +1,18 @@
 .venv/
 venv/
 env/
-
+imagenet_ai_0419_sdv4/
+dataset/
+*.keras
+,venv/
 .DS_Store
 
 __pycache__/
 *.pyc
 
 *.log
+
+*.zip
 
 scratch/
 할퀴다/
