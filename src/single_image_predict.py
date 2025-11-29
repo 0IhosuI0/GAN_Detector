@@ -12,7 +12,7 @@ from PIL import Image
 # ==========================
 
 # 학습이 끝나고 저장된 GenDet 모델 폴더 (1차원 discrepancy 버전)
-MODEL_DIR = "/home/nolja30/GAN_Detector/gendet_saved_models_20251128-044204"  # <- 네 폴더명으로 수정
+MODEL_DIR = "/home/nolja30/GAN_Detector/src/dataset"  # <- 네 폴더명으로 수정
 
 # 사용할 CLIP 백본 이름 (학습할 때 썼던 것과 동일)
 CLIP_MODEL_NAME = "openai/clip-vit-base-patch32"
@@ -76,24 +76,37 @@ def load_clip(model_name: str):
 # ==========================
 # 3. 단일 이미지 전처리 + 특징 추출
 # ==========================
+IMG_SIZE = 224
 
-def extract_clip_feature(image_path: str, processor: CLIPProcessor, vision_model: TFCLIPVisionModel):
+def extract_clip_feature(image_path: str,
+                         processor: CLIPProcessor,
+                         vision_model: TFCLIPVisionModel):
     """
-    image_path: 평가할 이미지 파일 경로
-    반환: (1, 768) CLIP 특징 텐서 (tf.Tensor, dtype=float32)
+    학습 때와 최대한 동일한 전처리:
+    - tf.io.read_file + decode_image
+    - tf.image.resize(..., [224,224])
+    - 0~1 스케일 후 다시 0~255 uint8로 변환
+    - CLIPProcessor(images=...) 호출
     """
-    # PIL로 이미지 로드 (RGB)
-    img = Image.open(image_path).convert("RGB")
+    # 1) TF로 로드 + 리사이즈
+    img_bytes = tf.io.read_file(image_path)
+    img = tf.image.decode_image(img_bytes, channels=3, expand_animations=False)
+    img = tf.image.resize(img, [IMG_SIZE, IMG_SIZE])
+    img = tf.cast(img, tf.float32) / 255.0      # [0,1]
 
-    # CLIP Processor로 전처리 (사이즈/정규화 포함)
-    inputs = processor(images=img, return_tensors="tf")
-    pixel_values = inputs["pixel_values"]  # shape: (1, 3, 224, 224)
+    # 2) Numpy로 변환 후 0~255 uint8로
+    img_np = img.numpy()                        # (224, 224, 3), float32
+    img_uint8 = (img_np * 255).astype(np.uint8)
 
-    # CLIP Vision 모델로 특징 추출
+    # 3) 학습 때와 동일하게 CLIPProcessor 사용
+    inputs = processor(images=img_uint8, return_tensors="tf", padding=True)
+    pixel_values = inputs["pixel_values"]       # (1, 3, 224, 224)
+
+    # 4) CLIP Vision 모델로 특징 추출
     outputs = vision_model(pixel_values)
-    features = outputs.pooler_output  # shape: (1, 768)
+    features = outputs.pooler_output            # (1, 768)
 
-    return features  # tf.Tensor
+    return features
 
 
 # ==========================
