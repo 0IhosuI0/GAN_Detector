@@ -13,6 +13,7 @@ __pycache__/
 *.log
 *.jpg
 *.h5
+*.png
 
 *.zip
 
