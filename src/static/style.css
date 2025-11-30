@@ -211,29 +211,6 @@ body {
     opacity: 0.8;
 }
 
-/* ASCII Art */
-.ascii-art {
-    margin-top: 2rem;
-}
-
-.ascii-art pre {
-    font-family: 'Nexa-ExtraLight';
-    font-size: 1.2rem;
-    line-height: 1.2;
-    color: var(--ascii-color);
-    text-align: center;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 1.5rem;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    overflow-x: auto;
-}
-
-[data-theme="dark"] .ascii-art pre {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
 /* 결과화면 : 이미지 프리뷰 */
 .image-preview-wrapper {
     display: none;
@@ -541,11 +518,7 @@ body {
     .subtitle {
         font-size: 1.1rem;
     }
-    
-    .ascii-art pre {
-        font-size: 0.7rem;
-        padding: 1rem;
-    }
+
     
     .header-content {
         padding: 1rem;

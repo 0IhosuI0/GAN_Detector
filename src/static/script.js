@@ -183,7 +183,7 @@ class FileUploadManager {
         const formData = new FormData();
         formData.append("file", file);
 
-        fetch("http://192.168.192.244:5050/api/analyze", {
+        fetch("http://192.168.192.111:5050/api/analyze", {
             method: "POST",
             body: formData
         })
@@ -350,21 +350,6 @@ class ResponsiveManager {
         }, 250));
 
         this.handleResize();
-    }
-
-    handleResize() {
-        const width = window.innerWidth;
-        
-        const asciiArt = document.querySelector('.ascii-art pre');
-        if (!asciiArt) return;
-
-        if (width <= 480) {
-            asciiArt.style.fontSize = '0.6rem';
-        } else if (width <= 768) {
-            asciiArt.style.fontSize = '0.7rem';
-        } else {
-            asciiArt.style.fontSize = '0.8rem';
-        }
     }
 }
 
