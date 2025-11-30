@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  ai-server:
+    environment:
+      - CUDA_VISIBLE_DEVICES=all
+
+    deploy:
+      resources:
+        reservations:
+          device:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

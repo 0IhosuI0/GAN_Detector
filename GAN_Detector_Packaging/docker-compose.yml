@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  ai-server:
+    build: ./ai_service
+    container_name: gan-detector-ai
+    ports:
+      - "35480:35840"
+    volumes:
+      - ./ai_servcie/models:/app/models
+    environment:
+      - CUDA_VISIBLE_DEVICES=-1
+
+  web-servier:
+    build: ./web_service
+    container_name: gan-detector-web
+    ports:
+      - "5050:5050"
+    depends_on:
+      - ai-server
+    environment:
+      - AI_SERVER_URL=http://ai-server:35480

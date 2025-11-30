@@ -19,3 +19,6 @@ __pycache__/
 
 scratch/
 할퀴다/
+
+!GAN_Detector_Packaging/*
+!GAN_Detector_Packaging/ai_service/models/*

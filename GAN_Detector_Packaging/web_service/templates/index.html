@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Detector - AI 이미지 판별기</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">AI Image Detector</h1>
+
+            <div class="header-buttons">
+                <!-- 다크모드 토글 -->
+                <button class="theme-toggle" id="themeToggle" aria-label="테마 변경">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+
+                <!-- About(햄버거) -->
+                <a href="{{ url_for('about') }}" class="nav-button" aria-label="About 페이지로 이동">
+                    ☰
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 페이지 -->
+    <main class="main">
+        <div class="container">
+            <div class="split-screen">
+                <!-- 왼쪽 -->
+                <section class="left-section">
+                    <div class="content">
+                        <h2 class="main-title">AI Image Detector</h2>
+                        <p class="subtitle">Is it real or AI-generated? Find out now.</p>
+                        <div class="ascii-art">
+                            <pre></pre>
+                        </div>
+                    </div>
+
+                    <!-- 분석 후 이미지 프리뷰 -->
+                    <div class="image-preview-wrapper" id="imagePreviewWrapper">
+                        <img id="previewImage" class="preview-image" alt="업로드한 이미지 미리보기">
+                    </div>
+                </section>
+
+                <!-- 오른쪽 -->
+                <section class="right-section">
+                    <div class="upload-container">
+                        <!-- 업로드 박스 -->
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <div class="upload-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17,8 12,3 7,8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                            </div>
+                            <p class="upload-text">Drag & drop your image here, or click to select a file.</p>
+                            <p class="upload-constraints">Supports: PNG, JPG</p>
+                        </div>
+
+                        <!-- 결과 카드 -->
+                        <div class="result-box" id="resultBox" style="display: none;">
+                            <h3 class="result-title">분석 결과</h3>
+                            
+                            <div class="result-badge" id="resultBadge">
+                                AI 사용됨
+                            </div>
+
+                            <div class="result-percent" id="resultPercent">
+                                87%
+                            </div>
+
+                            <div class="result-progress">
+                                <div class="result-progress-fill" id="resultProgressFill"></div>
+                            </div>
+
+                            <p class="result-message" id="resultMessage">
+                                이 이미지는 AI가 사용되었을 가능성이 매우 높아요.
+                            </p>
+                        </div>
+
+                        <!-- Analyze / Home 버튼 -->
+                        <button class="analyze-button" id="analyzeButton">
+                            Analyze
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- 파일 선택 -->
+    <input type="file" id="fileInput" accept=".png,.jpg,.jpeg" style="display: none;">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
