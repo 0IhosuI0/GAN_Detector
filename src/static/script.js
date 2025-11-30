@@ -4,7 +4,7 @@ const body = document.body;
 const fileUploadArea = document.getElementById('fileUploadArea');
 const fileInput = document.getElementById('fileInput');
 const analyzeButton = document.getElementById('analyzeButton');
-const uploadContainer = document.querySelector('.upload-container'); // 결과 모드 폭 조절용
+const uploadContainer = document.querySelector('.upload-container');
 
 // 메인 좌우 섹션 공용 애니메이션 함수
 function animateMainSections() {
@@ -163,7 +163,7 @@ class FileUploadManager {
         uploadText.style.fontWeight = '600';
     }
 
-    // ⭐⭐⭐ 실제 백엔드와 통신하는 함수 ⭐⭐⭐
+    // 실제 백엔드와 통신하는 함수
     handleAnalyze() {
         if (this.isResultShown) {
             this.resetView();
@@ -183,7 +183,7 @@ class FileUploadManager {
         const formData = new FormData();
         formData.append("file", file);
 
-        fetch("http://127.0.0.1:5050/api/analyze", {
+        fetch("http://192.168.192.244:5050/api/analyze", {
             method: "POST",
             body: formData
         })
@@ -205,7 +205,7 @@ class FileUploadManager {
         });
     }
 
-    // ⭐⭐⭐ 백엔드 결과 적용 ⭐⭐⭐
+    //백엔드 결과 적용
     showAnalysisResult(result) {
         analyzeButton.classList.remove('loading');
         analyzeButton.disabled = false;
@@ -450,3 +450,28 @@ class App {
 
 // 앱 시작
 new App();
+
+function initAboutPage() {
+    const illustration = document.querySelector('.about-illustration');
+    const cards = document.querySelectorAll('.about-card');
+
+    if (!illustration) return; // about 페이지가 아니면 종료
+
+    // Illustration 먼저 등장
+    setTimeout(() => {
+        illustration.classList.add('show');
+    }, 300);
+
+    // 카드 하나씩 등장
+    cards.forEach((card, i) => {
+        setTimeout(() => {
+            card.classList.add('show');
+        }, 400 + i * 200);
+    });
+}
+
+const originalStartApp = App.prototype.start;
+App.prototype.start = function() {
+    originalStartApp.call(this);
+    initAboutPage();
+}
