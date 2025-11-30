@@ -11,6 +11,8 @@ __pycache__/
 *.pyc
 
 *.log
+*.jpg
+*.h5
 
 *.zip
 
