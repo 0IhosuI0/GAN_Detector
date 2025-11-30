@@ -3,8 +3,8 @@ import base64
 import json
 
 # 1. 내 서버 주소 (로컬에서 띄웠으므로 127.0.0.1)
-URL = "http://127.0.0.1:35840/predict"
-IMAGE_PATH = "KakaoTalk_20251128_144430688_01.jpg" # 테스트할 이미지 파일명
+URL = "http://127.0.0.1:35480/predict"
+IMAGE_PATH = "test_img.jpg" # 테스트할 이미지 파일명
 
 def test_my_server():
     print(f"📂 '{IMAGE_PATH}' 이미지를 준비하는 중...")
