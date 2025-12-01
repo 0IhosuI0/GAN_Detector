@@ -64,12 +64,13 @@ def detect_faces(pil_image):
 
         img_h, img_w = img_bgr.shape[:2]
 
-        faces = FACE_CASCADE.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(64,64))
-
+        min_face_dim = min(img_h, img_w) // 8
+        faces = FACE_CASCADE.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(min_face_dim, min_face_dim))
+        
         if len(faces) > 0:
             (x, y, w, h) = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)[0]
             
-            padding_ratio = 0.4  
+            padding_ratio = 0.2
             
             pad_w = int(w * padding_ratio)
             pad_h = int(h * padding_ratio)
