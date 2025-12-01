@@ -10,9 +10,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY models ./models/
 COPY haarcascade_frontalface_default.xml .
 COPY ai_server.py .
-RUN wget -O models/ResNet_EPOCH100.h5 "https://github.com/ghtn10000/GAN_Detector/releases/download/v1.0.2/ResNet_EPOCH100.h5"
-RUN wget -O models/teacher.keras "https://github.com/ghtn10000/GAN_Detector/releases/download/v1.0.2/teacher.keras"
-RUN wget -O models/student.keras "https://github.com/ghtn10000/GAN_Detector/releases/download/v1.0.2/student.keras"
-RUN wget -O models/classifier.keras "https://github.com/ghtn10000/GAN_Detector/releases/download/v1.0.2/classifier.keras"
+RUN wget -O models/ResNet_EPOCH100.h5 "https://github.com/ghtn10000/GAN_Detector/releases/download/v1.0.3/ResNet_EPOCH100.h5"
+RUN wget -O models/teacher.keras "https://github.com/ghtn10000/GAN_Detector/releases/download/v1.0.3/teacher.keras"
+RUN wget -O models/student.keras "https://github.com/ghtn10000/GAN_Detector/releases/download/v1.0.3/student.keras"
+RUN wget -O models/classifier.keras "https://github.com/ghtn10000/GAN_Detector/releases/download/v1.0.3/classifier.keras"
 
 CMD ["uvicorn", "ai_server:app", "--host", "0.0.0.0", "--port", "35480"]

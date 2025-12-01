@@ -16,6 +16,7 @@ __pycache__/
 *.png
 
 *.zip
+*.tar.xz
 
 scratch/
 할퀴다/
