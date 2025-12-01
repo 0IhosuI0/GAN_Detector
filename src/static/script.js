@@ -141,7 +141,7 @@ class FileUploadManager {
     }
 
     isValidFile(file) {
-        const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+        const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/jfif', 'image/webp', 'image/bmp', 'image/tif', 'image/tiff'];
         return validTypes.includes(file.type);
     }
 
