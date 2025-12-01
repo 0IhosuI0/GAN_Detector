@@ -1,13 +1,25 @@
 .venv/
 venv/
 env/
-
+imagenet_ai_0419_sdv4/
+dataset/
+*.keras
+,venv/
 .DS_Store
 
 __pycache__/
 *.pyc
 
 *.log
+*.jpg
+*.h5
+*.png
+
+*.zip
+*.tar.xz
 
 scratch/
 할퀴다/
+
+!GAN_Detector_Packaging/*
+!GAN_Detector_Packaging/ai_service/models/*

@@ -183,7 +183,7 @@ class FileUploadManager {
         const formData = new FormData();
         formData.append("file", file);
 
-        fetch("http://192.168.192.111:5050/api/analyze", {
+        fetch("http://127.0.0.1:5050/api/analyze", {
             method: "POST",
             body: formData
         })

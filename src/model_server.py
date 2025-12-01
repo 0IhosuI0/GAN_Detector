@@ -52,7 +52,7 @@ def predict_image(request: ImageRequest):
         confidence = score
     else:
         result_label = 0 # Real
-        confidence = 1 - score
+        confidence = score
 
     return {
         "filename": request.filename,
@@ -61,4 +61,4 @@ def predict_image(request: ImageRequest):
     }
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=35840)
+    uvicorn.run(app, host="0.0.0.0", port=35480)
