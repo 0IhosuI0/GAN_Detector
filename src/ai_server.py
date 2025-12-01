@@ -41,7 +41,7 @@ class TransformerBlock(keras.layers.Layer):
 
 print("Loading AI Model...")
 
-RESNET_MODEL_PATH = "best_model_EPOCH50.h5"
+RESNET_MODEL_PATH = "ResNet_EPOCH100.h5"
 GENDET_MODEL_PATH = "gendet/"
 
 TEACHER_PATH = os.path.join(GENDET_MODEL_PATH, "teacher.keras")
@@ -51,7 +51,10 @@ CLASSIFIER_PATH = os.path.join(GENDET_MODEL_PATH, "classifier.keras")
 CLIP_MODEL_NAME = "openai/clip-vit-base-patch32"
 GENDET_IMG_SIZE = 224
 
-FACE_CASCADE = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+xml_path = os.path.join(base_dir, 'haarcascade_frontalface_default.xml')
+FACE_CASCADE = cv2.CascadeClassifier(xml_path)
+
 
 def detect_faces(pil_image):
     try:
@@ -60,13 +63,49 @@ def detect_faces(pil_image):
 
         gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
 
-        faces = FACE_CASCADE.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(30,30))
+        img_h, img_w = img_bgr.shape[:2]
+        min_face_dim = min(img_h, img_w) // 8
 
-        if len(faces > 0):
+        faces = FACE_CASCADE.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(min_face_dim, min_face_dim))
+
+        SAVE_VISUALIZATIONS = True
+        VISUALIZATION_DIR_NAME = "visualizations_output"
+        ABSOLUTE_VISUALIZATION_DIR = os.path.join(base_dir, VISUALIZATION_DIR_NAME)
+        if len(faces) > 0:
             (x, y, w, h) = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)[0]
-            face_crop_bgr = img_bgr[y:y+h, x:x+w]
+            
+            padding_ratio = 0.2
+            
+            pad_w = int(w * padding_ratio)
+            pad_h = int(h * padding_ratio)
 
+            new_x = max(0, x - pad_w)
+            new_y = max(0, y - pad_h)
+            new_w = min(img_w, x + w + pad_w) - new_x
+            new_h = min(img_h, y + h + pad_h) - new_y
+
+            face_crop_bgr = img_bgr[new_y:new_y+new_h, new_x:new_x+new_w]
+            
             face_crop_rgb = cv2.cvtColor(face_crop_bgr, cv2.COLOR_BGR2RGB)
+
+            if SAVE_VISUALIZATIONS:
+                base_filename = "ex_image_1"
+                
+                # 1. 크롭된 얼굴 이미지 저장
+                Image.fromarray(face_crop_rgb).save(os.path.join(f"{ABSOLUTE_VISUALIZATION_DIR}", f"{base_filename}_crop.jpg"))
+
+                # 2. 원본 이미지에 바운딩 박스 그리기
+                img_bbox_bgr = img_bgr.copy()
+                # 원본 얼굴 박스 그리기 (빨간색)
+                cv2.rectangle(img_bbox_bgr, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                # 패딩된 얼굴 박스 그리기 (초록색)
+                cv2.rectangle(img_bbox_bgr, (new_x, new_y), (new_x + new_w, new_y + new_h), (0, 255, 0), 2)
+                
+                # 라벨 추가
+                cv2.putText(img_bbox_bgr, "Original Face", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                cv2.putText(img_bbox_bgr, "Padded Face", (new_x, new_y - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
+                Image.fromarray(cv2.cvtColor(img_bbox_bgr, cv2.COLOR_BGR2RGB)).save(os.path.join(f"{ABSOLUTE_VISUALIZATION_DIR}", f"{base_filename}_bbox.jpg"))
             return True, Image.fromarray(face_crop_rgb)
         else:
             return False, None
@@ -216,4 +255,4 @@ def predict_image(request: ImageRequest):
     }
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=35480)
+    uvicorn.run(app, host="0.0.0.0", port=35490)
