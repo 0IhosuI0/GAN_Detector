@@ -342,9 +342,9 @@ body {
     font-size: 1.1rem;
     font-weight: 500;
     margin-bottom: 0.5rem;
-    color: var(--text-color); 
+    color: var(--text-color);
     white-space: normal;
-    word-break: break-word;  
+    word-break: break-word;
 }
 
 .upload-constraints {
@@ -520,7 +520,11 @@ body {
     .subtitle {
         font-size: 1.1rem;
     }
-
+    
+    .ascii-art pre {
+        font-size: 0.7rem;
+        padding: 1rem;
+    }
     
     .header-content {
         padding: 1rem;
