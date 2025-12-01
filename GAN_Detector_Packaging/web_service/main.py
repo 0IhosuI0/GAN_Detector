@@ -31,10 +31,8 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-MODEL_SERVER_IP = "192.168.192.111" # 수정함
-MODEL_SERVER_PORT = "35480" # 포트 수정함
-MODEL_SERVER_ENDPOINT = "predict"
-MODEL_SERVER_URL = f"http://{MODEL_SERVER_IP}:{MODEL_SERVER_PORT}/{MODEL_SERVER_ENDPOINT}"
+AI_BASE_URL = os.environ.get("AI_SERVER_URL", "http://localhost:35480")
+MODEL_SERVER_URL = f"{AI_BASE_URL}/predict"
 
 ## Flask 라우터
 @app.route('/')
