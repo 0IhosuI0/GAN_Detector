@@ -78,7 +78,7 @@ def get_resnet_score(img_path):
         img_array = np.expand_dims(img_array, axis=0)
         
         pred = resnet_model.predict(img_array, verbose=0)
-        return float(pred[0][0])
+        return 1.0 - float(pred[0][0])
     except:
         return 0.5 # 에러시 중립
 
@@ -139,7 +139,7 @@ for path in tqdm(fake_paths):
     s_res = get_resnet_score(path)
     s_gen = get_gendet_score(path)
     
-    final_score = (s_res + s_gen) / 2.0
+    final_score = max(s_res, s_gen)
     
     y_true.append(1)
     y_scores.append(final_score)

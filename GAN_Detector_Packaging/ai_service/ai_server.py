@@ -159,7 +159,7 @@ def predict_image(request: ImageRequest):
         resnet_img_array = preprocess_for_resnet_model(crop_image)
 
         resnet_prediction = model.predict(resnet_img_array)
-        resnet_score = float(resnet_prediction[0][0])
+        resnet_score = 1.0 - float(resnet_prediction[0][0])
         
         try:
             pixel_values = preprocess_for_gendet_model(image_bytes)

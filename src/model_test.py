@@ -6,7 +6,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import os
 import random
 
-MODEL_PATH = 'best_model_EPOCH100.h5'
+MODEL_PATH = 'ResNet_EPOCH100.h5'
 
 BASE_DIR = 'data/dataset'
 TEST_DIR = os.path.join(BASE_DIR, 'test')
@@ -28,6 +28,7 @@ test_generator = test_datagen.flow_from_directory(
     shuffle=False
 )
 
+"""
 print("test model with test dataset")
 loss, accuracy = model.evaluate(test_generator)
 print(f"[Loss]: {loss:.4f}")
@@ -99,3 +100,5 @@ plt.savefig('Confusion Matrix')
 
 visualize_prediction(correct_indices, "Correct Predictions")
 visualize_prediction(incorrect_indices, "Incorrect Predictions")
+"""
+print(test_generator.class_indices)
