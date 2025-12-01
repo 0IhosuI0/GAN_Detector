@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request, current_app, render_template
-## render_template 추가
 from flask_cors import CORS
 import requests
 import io
@@ -7,6 +6,7 @@ import os
 import logging
 import time
 import base64
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -57,8 +57,8 @@ def analyze_content():
     file = request.files['file']
 
     if file.filename == '':
-        app.logger.warning("파일 이름이 비어있음")
-        return jsonify({"error": "파일 이름이 없습니다."}), 400
+        app.logger.warning("파일이 비어있음")
+        return jsonify({"error": "파일이 없습니다."}), 400
 
     if not allowed_file(file.filename):
         app.logger.warning(f"허용되지 않는 파일 형식: {file.filename}")
@@ -94,8 +94,16 @@ def analyze_content():
         }
 
         # 모델 서버 전송
-        response_from_model = requests.post(MODEL_SERVER_URL, json = json_to_send, timeout = 10)
+        response_from_model = requests.post(MODEL_SERVER_URL, json = json_to_send, timeout = 60) # timeout 60초로 변경함
         
+        # 모델 서버 상태 코드 확인 - 200 아님 에러
+        if response_from_model.status_code != 200:
+            app.logger.error(f"모델 서버 에러 반환: {response_from_model.text}")
+            return jsonify({
+                "error": "AI 모델 서버 내부 오류",
+                "detail": response_from_model.text
+            }), 502
+
         # 응답 처리 (모델 팀 포맷: filename, prediction, confidence)
         model_output = response_from_model.json() 
 
@@ -104,7 +112,7 @@ def analyze_content():
 
         # 방어 코드 추가 - 연결 오류 떴을 때
         if pred_value is None or conf_value is None:
-            app.logger.error(f"모델 응답 오류(값 없음): {model_output}")
+            app.logger.error(f"모델 응답 데이터 누락: {model_output}")
             return jsonify({"error": "AI 모델이 분석에 실패했습니다. (결과값 None)"}), 500
 
         # 1 = AI, 0 = Real
@@ -118,12 +126,21 @@ def analyze_content():
         app.logger.info(f"파일 분석 성공: {file.filename}, AI 확률: {conf_value}")
         return jsonify(final_result), 200
 
-    except requests.exceptions.ConnectionError as e:
-        current_app.logger.error(f"모델 서버 연결 실패: {e}")
-        return jsonify({"error": "모델 서버에 연결할 수 없습니다. (서버 꺼져 있음)"}), 503
+    except requests.exceptions.Timeout:
+        current_app.logger.error("모델 서버 응답 시간 초과 (Timeout)")
+        return jsonify({"error": "모델 분석 시간이 초과되었습니다.(60초)"}), 504
+
+    except requests.exceptions.ConnectionError:
+        current_app.logger.error("모델 서버 연결 실패 (로딩 가능성 높음)")
+        return jsonify({"error": "모델 서버가 로딩(실행) 중입니다. 잠시 후 다시 시도해 주세요."}), 503
+
+    except json.JSONDecodeError:
+        current_app.logger.error("모델 응답 JSON 파싱 실패")
+        return jsonify({"error": "모델 서버 응답 형식을 확인해 주세요."}), 500
+
     except Exception as e:
-        current_app.logger.error(f"분석 중 오류 발생: {e}")
-        return jsonify({"error": "이미지 분석 중 서버 오류가 발생했습니다."}), 500
+        current_app.logger.error(f"알 수 없는 서버 오류: {e}")
+        return jsonify({"error": f"서버 내부 오류가 발생했습니다. ({str(e)})"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5050) #포트 5050으로 임의 수정했습니다!(지선)
+    app.run(debug=True, host='0.0.0.0', port=5050)
