@@ -32,7 +32,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 MODEL_SERVER_IP = "192.168.192.111" # 수정함
-MODEL_SERVER_PORT = "35480" # 포트 수정함
+MODEL_SERVER_PORT = "35840" # 포트 수정함
 MODEL_SERVER_ENDPOINT = "predict"
 MODEL_SERVER_URL = f"http://{MODEL_SERVER_IP}:{MODEL_SERVER_PORT}/{MODEL_SERVER_ENDPOINT}"
 
