@@ -72,9 +72,8 @@
                                 </svg>
                             </div>
                             <p class="upload-text">Drag & drop your image here, or click to select a file.</p>
-                            <p class="upload-constraints">Supports: PNG, JPG</p>
+                            <p class="upload-constraints">Supports: png, jpg, jpeg, jfif, webp, bmp, tif, tiff</p>
                         </div>
-
                         <!-- 결과 카드 -->
                         <div class="result-box" id="resultBox" style="display: none;">
                             <h3 class="result-title">분석 결과</h3>
@@ -107,7 +106,7 @@
     </main>
 
     <!-- 파일 선택 -->
-    <input type="file" id="fileInput" accept=".png,.jpg,.jpeg" style="display: none;">
+    <input type="file" id="fileInput" accept=".png,.jpg,.jpeg, .jfif, .webp, .bmp, .tif, .tiff" style="display: none;">
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
