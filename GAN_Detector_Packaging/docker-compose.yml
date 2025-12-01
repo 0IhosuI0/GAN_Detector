@@ -6,8 +6,6 @@ services:
     container_name: gan-detector-ai
     ports:
       - "35480:35840"
-    volumes:
-      - ./ai_servcie/models:/app/models
     environment:
       - CUDA_VISIBLE_DEVICES=-1
 

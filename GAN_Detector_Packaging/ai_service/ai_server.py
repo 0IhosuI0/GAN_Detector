@@ -51,7 +51,9 @@ CLASSIFIER_PATH = os.path.join(GENDET_MODEL_PATH, "classifier.keras")
 CLIP_MODEL_NAME = "openai/clip-vit-base-patch32"
 GENDET_IMG_SIZE = 224
 
-FACE_CASCADE = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+xml_path = os.path.join(base_dir, 'haarcascade_frontalface_default.xml')
+FACE_CASCADE = cv2.CascadeClassifier(xml_path)
 
 def detect_faces(pil_image):
     try:
@@ -62,7 +64,7 @@ def detect_faces(pil_image):
 
         faces = FACE_CASCADE.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(30,30))
 
-        if len(faces > 0):
+        if len(faces) > 0:
             (x, y, w, h) = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)[0]
             face_crop_bgr = img_bgr[y:y+h, x:x+w]
 
