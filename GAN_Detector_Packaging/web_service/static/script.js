@@ -4,7 +4,7 @@ const body = document.body;
 const fileUploadArea = document.getElementById('fileUploadArea');
 const fileInput = document.getElementById('fileInput');
 const analyzeButton = document.getElementById('analyzeButton');
-const uploadContainer = document.querySelector('.upload-container');
+const uploadContainer = document.querySelector('.upload-container'); // 결과 모드 폭 조절용
 
 // 메인 좌우 섹션 공용 애니메이션 함수
 function animateMainSections() {
@@ -141,7 +141,7 @@ class FileUploadManager {
     }
 
     isValidFile(file) {
-        const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+        const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/jfif', 'image/webp', 'image/bmp', 'image/tif', 'image/tiff'];
         return validTypes.includes(file.type);
     }
 
@@ -183,7 +183,7 @@ class FileUploadManager {
         const formData = new FormData();
         formData.append("file", file);
 
-        fetch("http://127.0.0.1:5050/api/analyze", {
+        fetch("http://192.168.192.111:5050/api/analyze", {
             method: "POST",
             body: formData
         })
@@ -351,6 +351,21 @@ class ResponsiveManager {
 
         this.handleResize();
     }
+
+    handleResize() {
+        const width = window.innerWidth;
+        
+        const asciiArt = document.querySelector('.ascii-art pre');
+        if (!asciiArt) return;
+
+        if (width <= 480) {
+            asciiArt.style.fontSize = '0.6rem';
+        } else if (width <= 768) {
+            asciiArt.style.fontSize = '0.7rem';
+        } else {
+            asciiArt.style.fontSize = '0.8rem';
+        }
+    }
 }
 
 // 애니메이션 관리
@@ -436,27 +451,3 @@ class App {
 // 앱 시작
 new App();
 
-function initAboutPage() {
-    const illustration = document.querySelector('.about-illustration');
-    const cards = document.querySelectorAll('.about-card');
-
-    if (!illustration) return; // about 페이지가 아니면 종료
-
-    // Illustration 먼저 등장
-    setTimeout(() => {
-        illustration.classList.add('show');
-    }, 300);
-
-    // 카드 하나씩 등장
-    cards.forEach((card, i) => {
-        setTimeout(() => {
-            card.classList.add('show');
-        }, 400 + i * 200);
-    });
-}
-
-const originalStartApp = App.prototype.start;
-App.prototype.start = function() {
-    originalStartApp.call(this);
-    initAboutPage();
-}
