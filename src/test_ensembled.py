@@ -14,7 +14,7 @@ from tqdm import tqdm
 # =========================================================
 # 1. 경로 설정 (본인 환경에 맞게 수정!)
 # =========================================================
-RESNET_MODEL_PATH = "best_model_EPOCH100.h5"
+RESNET_MODEL_PATH = "ResNet_EPOCH100.h5"
 GENDET_MODEL_PATH = "gendet/"
 TEST_DATA_DIR = "data/dataset/test"  # 0_real, 1_fake 폴더가 있는 곳
 
@@ -42,7 +42,7 @@ class TransformerBlock(keras.layers.Layer):
         ffn_output = self.dropout2(ffn_output, training=training)
         return self.layernorm2(out1 + ffn_output)
 
-print("🚀 모델 로딩 중... (서버 없이 로컬에서 실행)")
+print("모델 로딩 중... (서버 없이 로컬에서 실행)")
 
 # GPU 설정
 gpus = tf.config.list_physical_devices("GPU")
@@ -63,7 +63,7 @@ classifier_model = keras.models.load_model(os.path.join(GENDET_MODEL_PATH, "clas
 
 clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 clip_vision_model = TFCLIPVisionModel.from_pretrained("openai/clip-vit-base-patch32")
-print("✅ 모든 모델 로딩 완료!")
+print("모든 모델 로딩 완료!")
 
 # =========================================================
 # 3. 추론 함수 정의
@@ -76,10 +76,6 @@ def get_resnet_score(img_path):
         
         img_array = tf.keras.utils.img_to_array(img)
         img_array = np.expand_dims(img_array, axis=0)
-        
-        # 🔴 [스위치 작동] 여기서 정규화 여부 결정
-        if USE_RESCALE:
-            img_array = img_array / 255.0
         
         pred = resnet_model.predict(img_array, verbose=0)
         return float(pred[0][0])
@@ -117,14 +113,12 @@ def get_gendet_score(img_path):
 real_paths = glob.glob(os.path.join(TEST_DATA_DIR, "real", "*.*"))
 fake_paths = glob.glob(os.path.join(TEST_DATA_DIR, "fake", "*.*"))
 
-print(f"\n📂 Real Images: {len(real_paths)}장")
-print(f"📂 Fake Images: {len(fake_paths)}장")
+print(f"\nReal Images: {len(real_paths)}장")
+print(f"Fake Images: {len(fake_paths)}장")
 
 y_true = []
 y_pred = []
 y_scores = [] # ROC-AUC용 (Fake일 확률)
-
-print(f"\n🚀 평가 시작! (USE_RESCALE = {USE_RESCALE})")
 
 # 1) Real 평가 (정답 0)
 print("Processing Real Images...")
@@ -155,15 +149,14 @@ for path in tqdm(fake_paths):
 # 5. 결과 리포트 출력
 # =========================================================
 print("\n" + "="*60)
-print(f"📊 [Evaluation Result] (Rescale: {USE_RESCALE})")
 print("="*60)
 
 acc = accuracy_score(y_true, y_pred)
 auc = roc_auc_score(y_true, y_scores)
 
-print(f"✅ Accuracy : {acc:.4f}")
-print(f"✅ ROC-AUC  : {auc:.4f}")
-print("\n📄 Detailed Report:")
+print(f"Accuracy : {acc:.4f}")
+print(f"ROC-AUC  : {auc:.4f}")
+print("\nDetailed Report:")
 print(classification_report(y_true, y_pred, target_names=['Real', 'Fake']))
 
 # 혼동 행렬 시각화
@@ -172,7 +165,7 @@ plt.figure(figsize=(6, 5))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
             xticklabels=['Pred Real', 'Pred Fake'], 
             yticklabels=['Actual Real', 'Actual Fake'])
-plt.title(f'Confusion Matrix (Rescale={USE_RESCALE})')
+plt.title(f'Confusion Matrix')
 plt.xlabel('Predicted')
 plt.ylabel('Actual')
 plt.show() # 로컬 환경이면 창이 뜨고, 서버면 에러날 수 있음 (그땐 plt.savefig 사용)

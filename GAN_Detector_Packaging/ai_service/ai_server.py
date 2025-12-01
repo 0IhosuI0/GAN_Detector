@@ -62,12 +62,25 @@ def detect_faces(pil_image):
 
         gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
 
-        faces = FACE_CASCADE.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(30,30))
+        img_h, img_w = img_bgr.shape[:2]
+
+        faces = FACE_CASCADE.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(64,64))
 
         if len(faces) > 0:
             (x, y, w, h) = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)[0]
-            face_crop_bgr = img_bgr[y:y+h, x:x+w]
+            
+            padding_ratio = 0.4  
+            
+            pad_w = int(w * padding_ratio)
+            pad_h = int(h * padding_ratio)
 
+            new_x = max(0, x - pad_w)
+            new_y = max(0, y - pad_h)
+            new_w = min(img_w, x + w + pad_w) - new_x
+            new_h = min(img_h, y + h + pad_h) - new_y
+
+            face_crop_bgr = img_bgr[new_y:new_y+new_h, new_x:new_x+new_w]
+            
             face_crop_rgb = cv2.cvtColor(face_crop_bgr, cv2.COLOR_BGR2RGB)
             return True, Image.fromarray(face_crop_rgb)
         else:
