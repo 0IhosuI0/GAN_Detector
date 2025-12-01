@@ -14,7 +14,7 @@
 
 ## 윈도우(Windows)
 
-   .\start.bat
+    .\start.bat
 
 ## Linux / MacOS
 
