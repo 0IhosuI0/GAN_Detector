@@ -126,8 +126,8 @@ for path in tqdm(real_paths):
     s_res = get_resnet_score(path)
     s_gen = get_gendet_score(path)
     
-    # 앙상블: 평균(Average) 방식 사용
-    final_score = (s_res + s_gen) / 2.0
+    # 앙상블: 최대(Max) 방식 사용
+    final_score = max(s_res, s_gen)
     
     y_true.append(0)
     y_scores.append(final_score)
