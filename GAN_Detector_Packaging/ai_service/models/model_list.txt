@@ -1,4 +1,0 @@
-ResNet_EPOCH100.h5
-classifier.keras
-student.keras
-teather.keras
